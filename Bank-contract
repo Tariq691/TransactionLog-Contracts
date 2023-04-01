@@ -1,4 +1,4 @@
-pragma solidity ^0.8.5;
+pragma solidity ^0.7.5;
 
 interface GovernmentInterface{
     function addTransaction(address _from, address _to, uint _amount) external; // we have to define if function return anything
@@ -32,8 +32,8 @@ contract Bank is Ownable {
         balance[msg.sender] -= amount;
         return balance[msg.sender];
     }
-    function getBalance() public view returns (address) {
-        return owner;
+    function getBalance() public view returns (uint) {
+        return balance[msg.sender];
     }
     function contractBalance() public view returns (uint) {
         return address(this).balance;
