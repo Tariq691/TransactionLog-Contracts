@@ -1,0 +1,49 @@
+pragma solidity ^0.8.5;
+
+interface GovernmentInterface{
+    function addTransaction(address _from, address _to, uint _amount) external; // we have to define if function return anything
+}
+contract Ownable{
+    
+    address public owner;
+
+    modifier onlyOwner {
+        require(msg.sender == owner, "You are not the owner");
+        _;
+    }
+
+    constructor () {
+        owner = msg.sender;
+    }
+}
+
+contract Bank is Ownable {  
+
+    GovernmentInterface governmentInstance = GovernmentInterface(0xf8e81D47203A594245E36C48e151709F0C19fBe8);
+    mapping(address => uint) balance;
+    
+    function deposit () public payable returns (uint) {
+        balance[msg.sender] += msg.value;
+        return balance[msg.sender];
+    }
+    function withdraw (uint amount) public onlyOwner returns (uint) {
+        require(balance[msg.sender] >= amount, "You dont have enough balance");
+        msg.sender.transfer(amount);
+        balance[msg.sender] -= amount;
+        return balance[msg.sender];
+    }
+    function getBalance() public view returns (address) {
+        return owner;
+    }
+    function contractBalance() public view returns (uint) {
+        return address(this).balance;
+    }
+    function transfer(address payable recipient, uint amount) public{
+        require(balance[msg.sender] >= amount, "Don't have enough balance");
+        require(recipient != msg.sender, "you are the sender & receiver");
+
+        recipient.transfer(amount);
+
+        governmentInstance.addTransaction(msg.sender, recipient, amount);
+    }
+}
